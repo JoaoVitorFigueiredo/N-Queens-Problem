@@ -4,7 +4,6 @@ import random
 def fitness(individual):
     """
     Número de pares de rainhas que não se atacam
-    Era legal testar também com o numero de rainhas que estejam mal *-1 pra ficar maximizavel
     """
     n = len(individual)
     non_attacking = 0
@@ -28,14 +27,18 @@ def mutate(individual, mutation_rate=0.03):
 
 
 def genetic_algorithm(n=8, population_size=1000, generations=500):
-    population = [random.choices(range(n), k=n) for _ in range(population_size)]
+    population = []
+
+    for _ in range(population_size):
+        n_ind = list(range(n))
+        random.shuffle(n_ind)
+        population.append(n_ind)
     max_fitness = (n * (n - 1)) // 2
 
     for gen in range(generations):
         population = sorted(population, key=lambda x: -fitness(x))
         if fitness(population[0]) == max_fitness:
-            print("Melhor individuo")
-            return population[0]
+            return population[0], True
 
         next_generation = population[:10]  # Elitismo mas pode ser outra
         while len(next_generation) < population_size:
@@ -44,6 +47,5 @@ def genetic_algorithm(n=8, population_size=1000, generations=500):
             child = mutate(child)
             next_generation.append(child)
         population = next_generation
-    print("Não foi encontrada uma solução\n"
-          f"Melhor individuo: {fitness(population[0])}")
-    return population[0]
+
+    return population[0], False
